@@ -77,7 +77,7 @@ class Index
 
   protected
   def add_with_stemmer(word, file_name)
-    return if COMMON_WORDS_WORDS.include? word
+    return if COMMON_WORDS.include? word
     stem = word.downcase.stem
     @index[stem] ||= Set.new
     @index[stem] << file_name unless @index[stem].include? file_name
