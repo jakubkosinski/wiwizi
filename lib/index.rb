@@ -2,8 +2,6 @@ require 'set'
 require 'stemmer'
 
 class Index
-
-class IndexStem
   attr_accessor :index, :positions, :frequencies
   COMMON_WORDS =
     ['a','able','about','above','abroad','according','accordingly','across','actually','adj','after',
@@ -80,12 +78,13 @@ class IndexStem
   protected
   def add_with_stemmer(word, file_name)
     return if COMMON_WORDS_WORDS.include? word
-    stem = word.stem
+    stem = word.downcase.stem
     @index[stem] ||= Set.new
-    @index[stem] << file_name unless @index[word].include? file_name
+    @index[stem] << file_name unless @index[stem].include? file_name
   end
 
   def add_without_stemmer(word, file_name)
+    word = word.downcase
     @index[word] ||= Set.new
     @index[word] << file_name unless @index[word].include? file_name
   end
