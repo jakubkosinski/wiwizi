@@ -17,12 +17,13 @@ class Search
     phrase.gsub(/[^\w\s]/,"").split.each do |word|
       @@sets << index[word.downcase.stem]
     end
+    puts "Search results for phrase '#{phrase}':"
     self.generate_results
   end
 
   def self.search(phrase, index, type)
     case type
-    when :stem
+    when :stemmer
       self.stem_search(phrase, index)
     else
       self.basic_search(phrase, index)
