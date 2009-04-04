@@ -1,0 +1,14 @@
+Simple search engine based on boolean retrieval.
+
+== Requirements ==
+ * romanbsd's fast_stemmer (http://github.com/romanbsd/fast-stemmer/tree/master)
+
+== TODO ==
+ * improve ranking in stemmer based search
+ * write specs!
+ * cleanup code
+ * replace searcher.rb with real demo
+
+== Copyright ==
+ * Jakub Kosinski (ghandal)
+ * Jakub Kwasniewski (jakubkwa)
