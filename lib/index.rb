@@ -56,36 +56,67 @@ class Index
     'whereafter','whereas','whereby','wherein','wheres','whereupon','wherever','whether','which','whichever','while',
     'whilst','whither','who','whod','whoever','whole','wholl','whom','whomever','whos','whose','why','will','willing',
     'wish','with','within','without','wonder','wont','would','wouldnt','x','y','yes','yet','you','youd','youll','your',
-    'youre','yours','yourself','yourselves','youve','z','zero']
+    'youre','yours','yourself','yourselves','youve','z','zero'].to_set
 
-  def initialize(type = :basic)
+  def initialize(type = :basic, options = {})
     @type = type
-    @index = {}
+    @index = options[:index] || {}
+    @positions = options[:positions] || {}
+    @frequencies = options[:frequencies] || {}
   end
 
   def index_document(file_name)
     words = File.read(file_name).gsub(/[^\w\s]/,"").split
-    words.each do |word|
+    words.each_with_index do |word, index|
       case @type
       when :stemmer
-        add_with_stemmer(word, file_name)
+        add_with_stemmer(word, file_name, index)
       else
-        add_without_stemmer(word, file_name)
+        add_without_stemmer(word, file_name, index)
       end
     end
   end
 
-  protected
-  def add_with_stemmer(word, file_name)
-    return if COMMON_WORDS.include? word
-    stem = word.downcase.stem
-    @index[stem] ||= Set.new
-    @index[stem] << file_name unless @index[stem].include? file_name
+  def save_to_file(options = {})
+    names = {:index => "index.dat", :frequencies => "frequencies.dat", :positions => "positions.dat"}.merge(options)
+    save_index names[:index]
+    save_frequencies names[:frequencies]
+    #save_positions names[:positions]
   end
 
-  def add_without_stemmer(word, file_name)
+  def self.load_index(type = :basic, options = {})
+    names = {:index => "index.dat", :frequencies => "frequencies.dat", :positions => "positions.dat"}.merge(options)
+    index = Marshal.load(File.read(names[:index]))
+    frequencies = Marshal.load(File.read(names[:frequencies]))
+    #positions = Marshal.load(File.read(names[:positions]))
+    Index.new(type, :index => index, :frequencies => frequencies)
+  end
+
+  protected
+
+  def save_index(file)
+    File.open(file, "wb"){|f| f << Marshal.dump(@index)}
+  end
+
+  def save_positions(file)
+    File.open(file, "wb"){|f| f << Marshal.dump(@positions)}
+  end
+
+  def save_frequencies(file)
+    File.open(file, "wb"){|f| f << Marshal.dump(@frequencies)}
+  end
+
+  def add_with_stemmer(word, file_name, index)
+    return if COMMON_WORDS.include? word
+    stem = word.downcase.stem
+    (@index[stem] ||= Set.new) << file_name                   # add file name to stem set
+    #(@positions[stem] ||= Hash.new([]))[file_name] << index   # add position of stem in file
+    (@frequencies[stem] ||= Hash.new(0))[file_name] += 1      # increment frequency of stem in file
+  end
+
+  def add_without_stemmer(word, file_name, index)
     word = word.downcase
     @index[word] ||= Set.new
-    @index[word] << file_name unless @index[word].include? file_name
+    @index[word] << file_name
   end
 end
