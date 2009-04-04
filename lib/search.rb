@@ -3,37 +3,47 @@ require 'stemmer'
 require 'index'
 
 class Search
-  def self.basic_search(phrase, index)
-    @@sets = []
-    phrase.gsub(/[^\w\s]/,"").split.each do |word|
-      @@sets << index[word.downcase]
-    end
-    puts "Search results for phrase '#{phrase}':"
-    self.generate_results
+  attr_accessor :type
+
+  def initialize(index, type = :basic)
+    @index = index
+    @type  = type
   end
 
-  def self.stem_search(phrase, index)
-    @@sets = []
-    phrase.gsub(/[^\w\s]/,"").split.each do |word|
-      @@sets << index[word.downcase.stem]
+  def basic_search(phrase)
+    @sets = []
+    @phrase_words = phrase.gsub(/[^\w\s]/,"").split
+    @phrase_words.each do |word|
+      @sets << @index.index[word.downcase]
     end
-    puts "Search results for phrase '#{phrase}':"
-    self.generate_results
+    generate_results
   end
 
-  def self.search(phrase, index, type)
-    case type
+  def stem_search(phrase)
+    @sets = []
+    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.collect{|i| i.stem}
+    @phrase_words.each do |word|
+      @sets << @index.index[word.downcase]
+    end
+    generate_results
+  end
+
+  def search(phrase)
+    case @type
     when :stemmer
-      self.stem_search(phrase, index)
+      stem_search(phrase)
     else
-      self.basic_search(phrase, index)
+      basic_search(phrase)
     end
   end
 
   protected
-  def self.generate_results
-    @@results = @@sets.inject{|r,s| r.intersection s}
-    puts @@results.to_a.join("\n")
-    @@results
+  def generate_results
+    @results = @sets.inject{|r,s| r.intersection s}
+    if @type == :basic
+      @results.to_a
+    else
+      @results.to_a.sort{|x,y| @phrase_words.inject(0){|sum, i| sum += @index.frequencies[i][x]} <=> @phrase_words.inject(0){|sum, i| sum += @index.frequencies[i][y]} }.reverse
+    end
   end
 end
