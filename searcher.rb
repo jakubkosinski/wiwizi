@@ -17,21 +17,24 @@ def measure
   STDERR.flush
 end
 
-measure do
-  @index = Index.new(INDEX_TYPE)
-  STDERR.print "Indexing..."
-  STDERR.flush
-  docs = Dir.glob(DATA_DIR_MASK).reject{|file| File.directory? file}
-  docs.each {|doc| @index.index_document(doc)}
-end
-
-if ARGV.first == "-i"
+if $0 == __FILE__
   measure do
-    buff = File.readlines(ARGV[1])
-    times = buff.first.to_i
-    buff.slice(1..-1).each do |phrase|
-      times.times { Search.search(phrase.strip, @index.index, INDEX_TYPE) }
-      puts
+    @index = Index.new(INDEX_TYPE)
+    STDERR.print "Indexing..."
+    STDERR.flush
+    docs = Dir.glob(DATA_DIR_MASK).reject{|file| File.directory? file}
+    docs.each {|doc| @index.index_document(doc)}
+  end
+
+  if ARGV.first == "-i"
+    @search = Search.new(@index, INDEX_TYPE)
+    measure do
+      buff = File.readlines(ARGV[1])
+      times = buff.first.to_i
+      buff.slice(1..-1).each do |phrase|
+        times.times { puts "Search results for phrase '#{phrase.strip}':\n#{@search.search(phrase.strip).join("\n")}" }
+        puts
+      end
     end
   end
 end
