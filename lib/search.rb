@@ -1,5 +1,5 @@
 require 'set'
-require 'stemmer'
+require 'fast_stemmer'
 require 'index'
 
 class Search

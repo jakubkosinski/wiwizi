@@ -1,5 +1,5 @@
 require 'set'
-require 'stemmer'
+require 'fast_stemmer'
 
 class Index
   attr_accessor :index, :positions, :frequencies
