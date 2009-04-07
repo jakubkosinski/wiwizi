@@ -21,7 +21,7 @@ class Search
 
   def stem_search(phrase)
     @sets = []
-    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.collect{|i| i.stem}
+    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.collect{|i| i.stem}.delete_if {|i| Index::COMMON_WORDS.include? i.downcase}
     @phrase_words.each do |word|
       @sets << @index.index[word.downcase]
     end

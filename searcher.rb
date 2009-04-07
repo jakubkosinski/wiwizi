@@ -8,7 +8,7 @@ require 'rubygems'
 require 'lib/wiwizi'
 
 DATA_DIR_MASK = "./data/**/*"
-INDEX_TYPE    = :basic
+INDEX_TYPE    = :stemmer
 
 def measure
   start = Time.now
@@ -18,14 +18,18 @@ def measure
 end
 
 if $0 == __FILE__
-  measure do
-    @index = Index.new(INDEX_TYPE)
-    STDERR.print "Indexing..."
-    STDERR.flush
-    docs = Dir.glob(DATA_DIR_MASK).reject{|file| File.directory? file}
-    docs.each {|doc| @index.index_document(doc)}
+  begin
+    @index = Index.load_index()
+  rescue
+    measure do
+      @index = Index.new(INDEX_TYPE)
+      STDERR.print "Indexing..."
+      STDERR.flush
+      docs = Dir.glob(DATA_DIR_MASK).reject{|file| File.directory? file}
+      docs.each {|doc| @index.index_document(doc)}
+    end
   end
-
+  
   if ARGV.first == "-i"
     @search = Search.new(@index, INDEX_TYPE)
     measure do
@@ -36,5 +40,7 @@ if $0 == __FILE__
         puts
       end
     end
+  else
+    @index.save_to_file()
   end
 end

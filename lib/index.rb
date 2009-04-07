@@ -34,26 +34,26 @@ class Index
     'maynt','me','mean','meantime','meanwhile','merely','might','mightnt','mine','minus','miss','more','moreover',
     'most','mostly','mr','mrs','much','must','mustnt','my','myself','n','name','namely','nd','near',
     'nearly','necessary','need','neednt','needs','neither','never','neverf','neverless','nevertheless','new',
-    'next','nine','ninety','no','nobody','non','none','nonetheless','noone','no-one','nor','normally','not','nothing','notwithstanding','novel','now','nowhere','o','obviously','of','off',
-    'often','oh','ok','okay','old','on','once','one','ones','ones','only','onto','opposite','or','other','others',
-    'otherwise','ought','oughtnt','our','ours','ourselves','out','outside','over','overall','own','p','particular',
-    'particularly','past','per','perhaps','placed','please','plus','possible','presumably','probably','provided',
-    'provides','q','que','quite','qv','r','rather','rd','re','really','reasonably','recent','recently','regarding',
-    'regardless','regards','relatively','respectively','right','round','s','said','same','saw','say','saying','says',
-    'second','secondly','see','seeing','seem','seemed','seeming','seems','seen','self','selves','sensible','sent',
-    'serious','seriously','seven','several','shall','shant','she','shed','shell','shes','should','shouldnt','since',
-    'six','so','some','somebody','someday','somehow','someone','something','sometime','sometimes','somewhat','
-    somewhere','soon','sorry','specified','specify','specifying','still','sub','such','sup','sure','t','take','taken',
-    'taking','tell','tends','th','than','thank','thanks','thanx','that','thatll','thats','thats','thatve','the',
-    'their','theirs','them','themselves','then','thence','there','thereafter','thereby','thered','therefore','therein',
-    'therell','therere','theres','theres','thereupon','thereve','these','they','theyd','theyll','theyre','theyve',
-    'thing','things','think','third','thirty','this','thorough','thoroughly','those','though','three','through',
-    'throughout','thru','thus','till','to','together','too','took','toward','towards','tried','tries','truly','try',
-    'trying','ts','twice','two','u','un','under','underneath','undoing','unfortunately','unless','unlike','unlikely',
-    'until','unto','up','upon','upwards','us','use','used','useful','uses','using','usually','v','value','various',
-    'versus','very','via','viz','vs','w','want','wants','was','wasnt','way','we','wed','welcome','well','well','went',
-    'were','were','werent','weve','what','whatever','whatll','whats','whatve','when','whence','whenever','where',
-    'whereafter','whereas','whereby','wherein','wheres','whereupon','wherever','whether','which','whichever','while',
+    'next','nine','ninety','no','nobody','non','none','nonetheless','noone','no-one','nor','normally','not','nothing',
+    'notwithstanding','novel','now','nowhere','o','obviously','of','off','often','oh','ok','okay','old','on','once',
+    'one','ones','ones','only','onto','opposite','or','other','others','otherwise','ought','oughtnt','our','ours',
+    'ourselves','out','outside','over','overall','own','p','particular','particularly','past','per','perhaps','placed',
+    'please','plus','possible','presumably','probably','provided','provides','q','que','quite','qv','r','rather','rd',
+    're','really','reasonably','recent','recently','regarding','regardless','regards','relatively','respectively',
+    'right','round','s','said','same','saw','say','saying','says','second','secondly','see','seeing','seem','seemed',
+    'seeming','seems','seen','self','selves','sensible','sent','serious','seriously','seven','several','shall','shant',
+    'she','shed','shell','shes','should','shouldnt','since','six','so','some','somebody','someday','somehow','someone',
+    'something','sometime','sometimes','somewhat','somewhere','soon','sorry','specified','specify','specifying','still',
+    'sub','such','sup','sure','t','take','taken','taking','tell','tends','th','than','thank','thanks','thanx','that',
+    'thatll','thats','thats','thatve','the','their','theirs','them','themselves','then','thence','there','thereafter',
+    'thereby','thered','therefore','therein','therell','therere','theres','theres','thereupon','thereve','these','they',
+    'theyd','theyll','theyre','theyve','thing','things','think','third','thirty','this','thorough','thoroughly','those',
+    'though','three','through','throughout','thru','thus','till','to','together','too','took','toward','towards','tried',
+    'tries','truly','try','trying','ts','twice','two','u','un','under','underneath','undoing','unfortunately','unless',
+    'unlike','unlikely','until','unto','up','upon','upwards','us','use','used','useful','uses','using','usually','v',
+    'value','various','versus','very','via','viz','vs','w','want','wants','was','wasnt','way','we','wed','welcome','well',
+    'well','went','were','were','werent','weve','what','whatever','whatll','whats','whatve','when','whence','whenever',
+    'where','whereafter','whereas','whereby','wherein','wheres','whereupon','wherever','whether','which','whichever','while',
     'whilst','whither','who','whod','whoever','whole','wholl','whom','whomever','whos','whose','why','will','willing',
     'wish','with','within','without','wonder','wont','would','wouldnt','x','y','yes','yet','you','youd','youll','your',
     'youre','yours','yourself','yourselves','youve','z','zero'].to_set
@@ -107,7 +107,7 @@ class Index
   end
 
   def add_with_stemmer(word, file_name, index)
-    return if COMMON_WORDS.include? word
+    return if COMMON_WORDS.include? word.downcase
     stem = word.downcase.stem
     (@index[stem] ||= Set.new) << file_name                   # add file name to stem set
     #(@positions[stem] ||= Hash.new([]))[file_name] << index   # add position of stem in file
