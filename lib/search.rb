@@ -43,7 +43,14 @@ class Search
     if @type == :basic
       @results.to_a
     else
-      @results.to_a.sort{|x,y| @phrase_words.inject(0){|sum, i| sum += @index.frequencies[i][x]} <=> @phrase_words.inject(0){|sum, i| sum += @index.frequencies[i][y]} }.reverse
+      rank(@results.to_a)
     end
+  end
+  
+  def rank(results)
+    results.sort { |x,y|
+      @phrase_words.inject(0.0){|sum, i| sum += (@index.frequencies[i][x] + @index.positions[i][x])} <=>
+      @phrase_words.inject(0.0){|sum, i| sum += (@index.frequencies[i][y] + @index.positions[i][y])}
+    }.reverse
   end
 end

@@ -70,7 +70,7 @@ class Index
     words.each_with_index do |word, index|
       case @type
       when :stemmer
-        add_with_stemmer(word, file_name, index)
+        add_with_stemmer(word, file_name, index, words.length.to_f)
       else
         add_without_stemmer(word, file_name, index)
       end
@@ -81,15 +81,15 @@ class Index
     names = {:index => "index.dat", :frequencies => "frequencies.dat", :positions => "positions.dat"}.merge(options)
     save_index names[:index]
     save_frequencies names[:frequencies]
-    #save_positions names[:positions]
+    save_positions names[:positions]
   end
 
   def self.load_index(type = :basic, options = {})
     names = {:index => "index.dat", :frequencies => "frequencies.dat", :positions => "positions.dat"}.merge(options)
     index = Marshal.load(File.read(names[:index]))
     frequencies = Marshal.load(File.read(names[:frequencies]))
-    #positions = Marshal.load(File.read(names[:positions]))
-    Index.new(type, :index => index, :frequencies => frequencies)
+    positions = Marshal.load(File.read(names[:positions]))
+    Index.new(type, :index => index, :frequencies => frequencies, :positions => positions)
   end
 
   protected
@@ -106,12 +106,15 @@ class Index
     File.open(file, "wb"){|f| f << Marshal.dump(@frequencies)}
   end
 
-  def add_with_stemmer(word, file_name, index)
+  def add_with_stemmer(word, file_name, index, length)
     return if COMMON_WORDS.include? word.downcase
     stem = word.downcase.stem
     (@index[stem] ||= Set.new) << file_name                   # add file name to stem set
-    #(@positions[stem] ||= Hash.new([]))[file_name] << index   # add position of stem in file
-    (@frequencies[stem] ||= Hash.new(0))[file_name] += 1      # increment frequency of stem in file
+    if (@positions[stem] ||= Hash.new(-1))[file_name] == -1
+      @positions[stem][file_name] = (1.0 - index/length)   # add position of stem in file
+    end
+    #(@frequencies[stem] ||= Hash.new(0))[file_name] += 1      # increment frequency of stem in file    
+    (@frequencies[stem] ||= Hash.new(0.0))[file_name] += (1.0/length)      # increment frequency of stem in file
   end
 
   def add_without_stemmer(word, file_name, index)
