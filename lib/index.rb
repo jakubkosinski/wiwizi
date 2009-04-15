@@ -3,6 +3,7 @@ require 'fast_stemmer'
 
 class Index
   attr_accessor :index, :positions, :frequencies
+  attr_reader :type
   COMMON_WORDS =
     ['a','able','about','above','abroad','according','accordingly','across','actually','adj','after',
     'afterwards','again','against','ago','ahead','aint','all','allow','allows','almost','alone',
@@ -77,35 +78,15 @@ class Index
     end
   end
 
-  def save_to_file(options = {})
-    names = {:index => "index.dat", :frequencies => "frequencies.dat", :positions => "positions.dat"}.merge(options)
-    save_index names[:index]
-    save_frequencies names[:frequencies]
-    save_positions names[:positions]
+  def save_index(file)
+    File.open(file, "wb"){|f| f << Marshal.dump(self)}
   end
 
-  def self.load_index(type = :basic, options = {})
-    names = {:index => "index.dat", :frequencies => "frequencies.dat", :positions => "positions.dat"}.merge(options)
-    index = Marshal.load(File.read(names[:index]))
-    frequencies = Marshal.load(File.read(names[:frequencies]))
-    positions = Marshal.load(File.read(names[:positions]))
-    Index.new(type, :index => index, :frequencies => frequencies, :positions => positions)
+  def self.load_index(file)
+    Marshal.load(File.read(file))
   end
 
   protected
-
-  def save_index(file)
-    File.open(file, "wb"){|f| f << Marshal.dump(@index)}
-  end
-
-  def save_positions(file)
-    File.open(file, "wb"){|f| f << Marshal.dump(@positions)}
-  end
-
-  def save_frequencies(file)
-    File.open(file, "wb"){|f| f << Marshal.dump(@frequencies)}
-  end
-
   def add_with_stemmer(word, file_name, index, length)
     return if COMMON_WORDS.include? word.downcase
     stem = word.downcase.stem
@@ -113,7 +94,7 @@ class Index
     if (@positions[stem] ||= Hash.new(-1))[file_name] == -1
       @positions[stem][file_name] = (1.0 - index/length)   # add position of stem in file
     end
-    #(@frequencies[stem] ||= Hash.new(0))[file_name] += 1      # increment frequency of stem in file    
+    #(@frequencies[stem] ||= Hash.new(0))[file_name] += 1      # increment frequency of stem in file
     (@frequencies[stem] ||= Hash.new(0.0))[file_name] += (1.0/length)      # increment frequency of stem in file
   end
 
