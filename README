@@ -7,7 +7,6 @@ Simple search engine based on boolean retrieval.
  * improve ranking in stemmer based search
  * write specs!
  * cleanup code
- * replace searcher.rb with real demo
 
 == Copyright ==
  * Jakub Kosinski (ghandal)
