@@ -67,7 +67,14 @@ class Index
   end
 
   def index_document(file_name)
-    words = File.read(file_name).gsub(/[^\w\s]/,"").split
+    words = []
+    if RUBY_VERSION =~ /^1.9/
+      file = File.open(file_name, "r:iso8859-2")
+      words = file.read
+    else
+      words = File.read(file_name)
+    end
+    words = words.gsub(/[^\w\s]/,"").split
     words.each_with_index do |word, index|
       case @type
       when :stemmer
@@ -89,7 +96,7 @@ class Index
   protected
   def add_with_stemmer(word, file_name, index, length)
     return if COMMON_WORDS.include? word.downcase
-    stem = word.downcase.stem
+    stem = word.downcase.stem_porter
     (@index[stem] ||= Set.new) << file_name                   # add file name to stem set
     if (@positions[stem] ||= Hash.new(-1))[file_name] == -1
       @positions[stem][file_name] = (1.0 - index/length)   # add position of stem in file

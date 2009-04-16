@@ -14,16 +14,16 @@ class Search
     @sets = []
     @phrase_words = phrase.gsub(/[^\w\s]/,"").split
     @phrase_words.each do |word|
-      @sets << @index.index[word.downcase] || Set.new
+      @sets << (@index.index[word.downcase] || Set.new)
     end
     generate_results
   end
 
   def stem_search(phrase)
     @sets = []
-    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.delete_if{|i| Index::COMMON_WORDS.include? i.downcase}.collect{|i| i.stem.downcase}
+    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.delete_if{|i| Index::COMMON_WORDS.include? i.downcase}.collect{|i| i.downcase.stem_porter}
     @phrase_words.each do |word|
-      @sets << @index.index[word] || Set.new
+      @sets << (@index.index[word] || Set.new)
     end
     generate_results
   end
