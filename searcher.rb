@@ -14,8 +14,8 @@ require 'progressbar'
 def measure
   start = Time.now
   yield
-  STDERR.print "done in ", Time.now - start, "s\n"
-  STDERR.flush
+  STDOUT.print "done in ", Time.now - start, "s\n"
+  STDOUT.flush
 end
 
 def prepare_index
@@ -26,8 +26,8 @@ def prepare_index
   docs.each {|doc| index.index_document(doc); pbar.inc }
   pbar.finish
   if @options[:save]
-    STDERR.print "saving index..."
-    STDERR.flush
+    STDOUT.print "saving index..."
+    STDOUT.flush
     measure { index.save_index(@options[:save]) }
   end
   index
@@ -69,7 +69,9 @@ search = Search.new(index)
 if @options[:times] && @options[:phrases]
   measure do
     @options[:phrases].each do |phrase|
-      @options[:times].times { puts "Search results for phrase '#{phrase.strip}':\n#{search.search(phrase.strip).join("\n")}" }
+      @options[:times].times do
+        measure { puts "Search results for phrase '#{phrase.strip}':\n#{search.search(phrase.strip).join("\n")}" }
+      end
       puts
     end
   end
