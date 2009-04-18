@@ -96,7 +96,11 @@ class Index
   protected
   def add_with_stemmer(word, file_name, index, length)
     return if COMMON_WORDS.include? word.downcase
-    stem = word.downcase.stem_porter
+    if RUBY_VERSION =~ /^1.9/
+      stem = word.downcase.stem_porter
+    else
+      stem = word.downcase.stem
+    end
     (@index[stem] ||= Set.new) << file_name                   # add file name to stem set
     if (@positions[stem] ||= Hash.new(-1))[file_name] == -1
       @positions[stem][file_name] = (1.0 - index/length)   # add position of stem in file
