@@ -5,9 +5,10 @@ require 'index'
 class Search
   attr_accessor :type
 
-  def initialize(index)
+  def initialize(index, rank = false)
     @index = index
     @type  = index.type
+    @rank  = rank
   end
 
   def basic_search(phrase)
@@ -46,7 +47,7 @@ class Search
   protected
   def generate_results
     @results = @sets.inject{|r,s| r & s}
-    if @type == :basic
+    if @rank == false
       @results.to_a
     else
       rank(@results.to_a)

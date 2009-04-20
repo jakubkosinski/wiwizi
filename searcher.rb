@@ -9,7 +9,7 @@ require 'lib/wiwizi'
 require 'optparse'
 require 'progressbar'
 
-@options = {:type => :basic, :dir => "data"}
+@options = {:type => :basic, :dir => "data", :rank => false}
 
 def measure
   start = Time.now
@@ -44,6 +44,9 @@ OptionParser.new do |opts|
   opts.on("-t","--type TYPE", [:basic, :stemmer], "index type, possible options: basic, stemmer. Default is basic") do |type|
     @options[:type] = type
   end
+  opts.on("-r","--rank", "enable ranking (only for stemmer index type)") do
+    @options[:rank] = true if @options[:type] == :stemmer
+  end
   opts.on("-f","--file FILE", "read index from given file") do |file|
     @options[:index] = file
   end
@@ -63,7 +66,7 @@ OptionParser.new do |opts|
 end.parse(ARGV)
 
 index  = prepare_index
-search = Search.new(index)
+search = Search.new(index, @options[:rank])
 
 # batch mode
 if @options[:times] && @options[:phrases]
