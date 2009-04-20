@@ -56,8 +56,8 @@ class Search
 
   def rank(results)
     results.sort { |x,y|
-      @phrase_words.inject(0.0){|sum, i| sum += (@index.frequencies[i][x] + @index.positions[i][x])} <=>
-      @phrase_words.inject(0.0){|sum, i| sum += (@index.frequencies[i][y] + @index.positions[i][y])}
+      @phrase_words.inject(0.0){|sum, i| sum += (3*@index.frequencies[i][x] + @index.positions[i][x])} <=>
+      @phrase_words.inject(0.0){|sum, i| sum += (3*@index.frequencies[i][y] + @index.positions[i][y])}
     }.reverse
   end
 end
