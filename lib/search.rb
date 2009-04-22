@@ -22,7 +22,7 @@ class Search
 
   def stem_search(phrase)
     @sets = []
-    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.delete_if{|i| Index::COMMON_WORDS.include? i.downcase}.collect do |i|
+    @phrase_words = phrase.gsub(/[^\w\s]/,"").split.collect do |i|
       if RUBY_VERSION =~ /^1.9/
         i.downcase.stem_porter
       else
